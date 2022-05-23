@@ -101,3 +101,6 @@ class TWManager:
         df = pd.concat(rows, ignore_index=True)
         df.transpose()
         return df
+
+    def update_auth_user_pfp(self, filename):
+        user = self.api.update_profile_image(filename=filename, skip_status=True)
