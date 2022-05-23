@@ -1,14 +1,16 @@
-import json
-import requests
 # import pandas as pd
 from utils.Cleaner import Cleaner
 from utils.TWManager import TWManager
+from utils.PicMaker import PicMaker
 
 if __name__ == '__main__':
-    url = "<URL>/index"
-
     twm = TWManager()
-    df = twm.tweets_df_by_user("<USERNAME>")
+
+    twm.auth_user()
+
+    df = twm.tweets_df_auth_user()
+
+    # df = twm.tweets_df_by_user("<USERNAME>")
 
     # df = pd.read_json(
     #     "data.json",
@@ -25,23 +27,6 @@ if __name__ == '__main__':
 
     df = cleaner.clean_up(df)
 
-    tokens = []
+    pm = PicMaker(url="<URL>/index")
 
-    for index, row in df.iterrows():
-        tokens.extend(row['lemma_tokens'])
-
-    tokens = list(set(tokens))
-
-    tweet_topics = ",".join(tokens)
-    payload = json.dumps({
-        "prompt": tweet_topics
-    })
-
-    headers = {
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.request("POST", url, headers=headers, data=payload)
-
-    with open("response.png", "wb") as f:
-        f.write(response.content)
+    pm.generate_image_from_df(df)
