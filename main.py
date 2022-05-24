@@ -1,6 +1,6 @@
-from utils.Cleaner import Cleaner
-from utils.TWManager import TWManager
-from utils.PfpManager import PicMaker
+from coen296a.utils.Cleaner import Cleaner
+from coen296a.utils import TWManager
+from coen296a.utils.PfpManager import PicMaker
 
 if __name__ == '__main__':
     twm = TWManager()
