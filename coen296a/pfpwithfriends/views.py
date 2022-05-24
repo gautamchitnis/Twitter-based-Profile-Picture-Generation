@@ -1,4 +1,7 @@
-from django.shortcuts import render
+from io import BytesIO
+
+from django.core import files
+from django.shortcuts import render, redirect
 from authorization.decorators import twitter_login_required
 from django.contrib.auth.decorators import login_required
 from decouple import config
@@ -7,6 +10,7 @@ from utils.TWManager import TWManager
 from utils.Cleaner import Cleaner
 from utils.PfpManager import PicMaker
 from authorization.models import TwitterUser
+from .models import PFP
 
 # Create your views here.
 
@@ -14,7 +18,12 @@ from authorization.models import TwitterUser
 @login_required
 @twitter_login_required
 def index(request):
-    return render(request, 'pfpwithfriends/home.html')
+    user_pfps = PFP.objects.filter(user=request.user)
+    context = {
+        'pfps': user_pfps
+    }
+    return render(request, 'pfpwithfriends/home.html', context)
+
 
 @login_required
 @twitter_login_required
@@ -51,11 +60,39 @@ def gen_pfp(request):
     '''
     pm = PicMaker(url=config('GEN_URL'))
 
-    pm.generate_image_from_df(df)
+    data = pm.generate_image_from_df(df)
+
+    fp = BytesIO()
+    fp.write(data)
+
+    pfp = PFP(pfp=files.File(fp, f"user_{request.user.id}.png"), user=request.user)
+    pfp.save()
+
+    return redirect(index)
+
+
+@login_required
+@twitter_login_required
+def update_pfp(request, pfp_id):
+    twitter_user = TwitterUser.objects.filter(user=request.user).first()
+
+    auth = Auth()
+    auth.set_auth_keys()
+    keys = auth.get_auth_keys()
+    keys.access_token = twitter_user.twitter_oauth_token.oauth_token
+    keys.access_token_secret = twitter_user.twitter_oauth_token.oauth_token_secret
+    auth.set_auth_keys(keys=keys)
+
+    twm = TWManager()
+    '''
+        Step 1: Authorize User
+    '''
+    twm.api = auth.get_auth()
 
     '''
         Step 5: Update Profile Picture of the User
     '''
-    # twm.update_auth_user_pfp("response.png")
+    user_pfp = PFP.objects.filter(user=request.user, id=pfp_id).first()
+    twm.update_auth_user_pfp(user_pfp.pfp.path)
 
-    return render(request, 'pfpwithfriends/home.html')
+    return redirect(index)

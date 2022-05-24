@@ -79,6 +79,7 @@ class Auth:
 
     def create_update_user_from_twitter(self, twitter_user_new):
         twitter_user = TwitterUser.objects.filter(twitter_id=twitter_user_new.twitter_id).first()
+
         if twitter_user is None:
             user = User.objects.filter(username=twitter_user_new.screen_name).first()
             if user is None:

@@ -27,5 +27,6 @@ class PicMaker:
 
         response = requests.request("POST", self.url, headers=headers, data=payload)
 
-        with open("response.png", "wb") as f:
-            f.write(response.content)
+        # with open("response.png", "wb") as f:
+        #     f.write(response.content)
+        return response.content

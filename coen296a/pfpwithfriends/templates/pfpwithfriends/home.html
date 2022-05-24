@@ -5,7 +5,33 @@
     <title>PFP With Friends</title>
 </head>
 <body>
-    PFP With Friends Home
-    <a href="{% url 'generate' %}">Start!</a>
+PFP With Friends Home
+<br/>
+<a href="{% url 'generate' %}">Start!</a>
+<br/>
+<br/>
+<br/>
+{% if error_message %}
+    <p><strong>{{ error_message }}</strong></p>
+    <br/>
+{% endif %}
+{% if pfps %}
+<div>
+    <p>Generated PFPs:</p>
+    {% for pfp in pfps %}
+    <div>
+        <img src="{{ pfp.pfp.url }}" width="15%"/>
+        <br/>
+        <form action="{% url 'update_pfp' pfp.id %}" method="post">
+            {% csrf_token %}
+            <input type="submit" value="Set as PFP">
+        </form>
+    </div>
+    <br/>
+    {% endfor %}
+</div>
+{% else %}
+<p>No PFPs</p>
+{% endif %}
 </body>
 </html>

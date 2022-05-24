@@ -89,7 +89,7 @@ class TWManager:
                 # exclude_replies=True,
                 # include_rts=False,
                 count=10
-        ).pages(10):
+        ).pages(2):
             page_count += 1
             print(f"Processing page {page_count}:")
             for tweet in page:
