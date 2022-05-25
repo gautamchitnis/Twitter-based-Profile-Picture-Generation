@@ -7,14 +7,40 @@
 <body>
 PFP With Friends Home
 <br/>
+{% if is_group_creator %}
 <a href="{% url 'generate' %}">Start!</a>
 <br/>
+{% endif %}
+
+{% if is_group_creator or group_name %}
+{% else %}
+<a href="{% url 'create_group_form' %}">Create Group</a>
+<a href="{% url 'join_group_form' %}">Join Group</a>
+<br/>
+{% endif %}
 <br/>
 <br/>
+{% if is_group_creator %}
+This user is a group creator
+<br/>
+{% elif group_name %}
+This user is a group member
+<br/>
+{% endif %}
+
+{% if group_name %}
+Group Name: {{ group_name }}
+<br/>
+{% else %}
+This user is not a group member
+<br/>
+{% endif %}
+
 {% if error_message %}
     <p><strong>{{ error_message }}</strong></p>
     <br/>
 {% endif %}
+
 {% if pfps %}
 <div>
     <p>Generated PFPs:</p>

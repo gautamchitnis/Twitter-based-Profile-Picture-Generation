@@ -10,7 +10,8 @@ from utils.TWManager import TWManager
 from utils.Cleaner import Cleaner
 from utils.PfpManager import PicMaker
 from authorization.models import TwitterUser
-from .models import PFP
+from .models import PFP, Group, GroupMember
+from django.contrib.auth.models import User
 
 # Create your views here.
 
@@ -19,9 +20,23 @@ from .models import PFP
 @twitter_login_required
 def index(request):
     user_pfps = PFP.objects.filter(user=request.user)
+
+    group = Group.objects.filter(creator=request.user).first()
+
+    if group is None:
+        creator = False
+        user = User.objects.filter(username=request.user).first()
+        group_member = GroupMember.objects.filter(user=user.id).first()
+        group = group_member.group
+    else:
+        creator = True
+
     context = {
-        'pfps': user_pfps
+        'pfps': user_pfps,
+        'is_group_creator': creator,
+        'group_name': group.name if group is not None or group_member is not None else None
     }
+
     return render(request, 'pfpwithfriends/home.html', context)
 
 
@@ -94,5 +109,40 @@ def update_pfp(request, pfp_id):
     '''
     user_pfp = PFP.objects.filter(user=request.user, id=pfp_id).first()
     twm.update_auth_user_pfp(user_pfp.pfp.path)
+
+    return redirect(index)
+
+
+@login_required
+@twitter_login_required
+def show_create_group(request):
+    return render(request, 'pfpwithfriends/create_group.html')
+
+
+@login_required
+@twitter_login_required
+def create_group(request):
+    name = request.POST['name']
+    group = Group(name=name, creator=request.user)
+    group.save()
+    group_member = GroupMember(user=request.user, group=group)
+    group_member.save()
+
+    return redirect(index)
+
+
+@login_required
+@twitter_login_required
+def show_join_group(request):
+    return render(request, 'pfpwithfriends/join_group.html')
+
+
+@login_required
+@twitter_login_required
+def join_group(request):
+    name = request.POST['name']
+    group = Group.objects.filter(name=name).first()
+    group_member = GroupMember(user=request.user, group=group)
+    group_member.save()
 
     return redirect(index)

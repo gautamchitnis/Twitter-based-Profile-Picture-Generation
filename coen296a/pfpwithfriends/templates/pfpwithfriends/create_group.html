@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PFP With Friends</title>
+</head>
+<body>
+<form action="{% url 'create_group' %}" method="post">
+{% csrf_token %}
+<fieldset>
+    <legend><h1>Create New Group</h1></legend>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <label for="name">Group Name</label>
+    <input type="text" name="name" id="name">
+    <br/>
+    <br/>
+</fieldset>
+    <br/>
+<input type="submit" value="Create">
+</form>
+</body>
+</html>
