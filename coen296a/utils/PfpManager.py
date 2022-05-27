@@ -8,17 +8,10 @@ class PicMaker:
     def __init__(self, url):
         self.url = url
 
-    def generate_image_from_df(self, df):
-        tokens = []
+    def generate_image_from_prompt(self, prompt):
 
-        for index, row in df.iterrows():
-            tokens.extend(row['lemma_tokens'])
-
-        tokens = list(set(tokens))
-
-        tweet_topics = ",".join(tokens)
         payload = json.dumps({
-            "prompt": tweet_topics
+            "prompt": prompt
         })
 
         headers = {

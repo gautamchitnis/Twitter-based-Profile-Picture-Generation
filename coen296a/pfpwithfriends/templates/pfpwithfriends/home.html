@@ -8,7 +8,9 @@
 PFP With Friends Home
 <br/>
 {% if is_group_creator %}
-<a href="{% url 'generate' %}">Start!</a>
+<a href="{% url 'generate_tags' %}">Generate Tags</a>
+<br/>
+<a href="{% url 'generate_pfp' %}">Create New PFPs</a>
 <br/>
 {% endif %}
 
@@ -23,8 +25,12 @@ PFP With Friends Home
 {% if is_group_creator %}
 This user is a group creator
 <br/>
+<a href="{% url 'show_tags' %}">Choose Tags</a>
+<br/>
 {% elif group_name %}
 This user is a group member
+<br/>
+<a href="{% url 'show_tags' %}">Choose Tags</a>
 <br/>
 {% endif %}
 
@@ -48,10 +54,18 @@ This user is not a group member
     <div>
         <img src="{{ pfp.pfp.url }}" width="15%"/>
         <br/>
-        <form action="{% url 'update_pfp' pfp.id %}" method="post">
+        Votes: {{ pfp.votes }}
+        <form action="{% url 'vote_pfp' pfp.id %}" method="post">
             {% csrf_token %}
-            <input type="submit" value="Set as PFP">
+            <input type="submit" value="Vote this PFP">
         </form>
+        <br>
+        {% if is_group_creator %}
+            <form action="{% url 'update_pfp' pfp.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Set as PFP">
+            </form>
+        {% endif %}
     </div>
     <br/>
     {% endfor %}

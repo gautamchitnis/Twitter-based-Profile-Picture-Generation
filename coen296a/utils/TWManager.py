@@ -13,7 +13,16 @@ class TWManager:
         self.auth = auth
         self.api = auth.get_auth()
 
-    def auth_user(self):
+    def auth_user(self, tw_user):
+        keys = self.auth.get_auth_keys()
+
+        keys.access_token = tw_user.twitter_oauth_token.oauth_token
+        keys.access_token_secret = tw_user.twitter_oauth_token.oauth_token_secret
+
+        self.auth.set_auth_keys(keys=keys)
+        self.api = self.auth.get_auth()
+
+    def auth_user_pin(self):
         keys = self.auth.get_auth_keys()
 
         oauth1_user_handler = tweepy.OAuth1UserHandler(

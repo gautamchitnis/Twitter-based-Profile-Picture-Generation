@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Tags</title>
+</head>
+<body>
+{% if tags %}
+<p>
+    {{ tags }}
+</p>
+<form action="{% url 'add_member_tags' %}" method="post">
+{% csrf_token %}
+<fieldset>
+    <legend><h1>Type tags of your choice below seperated by a comma</h1></legend>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <label for="tags">Tags</label>
+    <input type="text" name="tags" id="tags">
+    <br/>
+    <br/>
+</fieldset>
+    <br/>
+<input type="submit" value="Add">
+</form>
+{% else %}
+<p>Generate some tags first.</p>
+{% endif %}
+</body>
+</html>
